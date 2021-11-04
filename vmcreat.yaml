@@ -1,17 +1,6 @@
 ---
 - hosts: localhost
   tasks:
-  - name: Create Network Security Group that allows SSH
-    azure_rm_securitygroup:
-      resource_group: jenkin-rg
-      name: nsgansi
-      rules:
-      - name: SSH
-        protocol: Tcp
-        destination_port_range: 22
-        access: Allow
-        priority: 1001
-        direction: Inbound
   - name: Create public IP address
     azure_rm_publicipaddress:
       resource_group: jenkin-rg
@@ -28,7 +17,7 @@
       virtual_network: jenkins-vnet
       subnet: subnet1
       public_ip_name: docvmpubip
-      security_group: nsgansi
+      security_group: nsg
   - name: Create a VM with resource group and vnet
     azure_rm_virtualmachine:
       resource_group: jenkin-rg
@@ -39,7 +28,7 @@
       ssh_password_enabled: false
       ssh_public_keys:
       - path: /home/vmadmin/.ssh/authorized_keys
-        key_data: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOPlC6Vyas4/wlupFh7sZNMV6rLclyrLffTizk+uxa5GxKWejR0RSP4BH5AtwRQUnla/tLoJpY7YRoWYWMcNxW7kf1gtDBvOBbcNvTiBetAPI76TsgXzKFuRDSA+QGzypGRJWj506JUFlCmywnok50imc5RTXDzp7MwJwOSrXdWV+kwGExIWEgTtgkVlkSAfTRe4jWy+D6eJwYyIzK1JHYSRKWmcbpI/PobwJzyz81KhcBKgekSpkEk5hfrNXHmw2N+ohBfZeYBKu7Ie0Q2Gb7hCKcuzFFX2hiu27PxuH6GcYzByeApRB7G2O2vdE3AqZy3kU/lqyzKaTfiC5JLbj9eq3BbFN+EMCkTnsRQMVzkYnz3tm+Aj5NoxTO7NB+LfvChYyrlqEfLkPdY5GsqJprRazBF5G0ILGtBJ+IWAz0n7qJQNqBiyU90eMlZW7MrWKOYmimDtJXqt75xoLpZwSu3jzFoBtkM7A1uomJU7iDF09vJX5wzc9LozhoD4B70pwMZFD9KU+RIvc+gmt0MdFNG5+VUR1e6GU6KZWBx92rfk1a2kVz/djM0btii6pu0lpW6a/PpuCVWdhfa6y+z+Pm2nN3/2km9bv+x5NepriRMxvZFSPNr10i+yd+BXYtHE+L1zBWkYMDLwB5TlZbaM6SMbLiqgznHC+5KDNNhYBSzQ== vmadmin@vm-build"
+        key_data: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC3jbWYsdzLdaD5vxmJPVd3JsoWzD47YNd+HyHWW5leuOmV+iUlzgDXKtRFvQDsgBWQ9JkOkxkO+KiZ+tlWnH40ZcOI8ZCuhzdnFcHisnAtrOkxkz7yLIgqhQhCYmmBo5WhZXJ3y0h9lDVFvQP0N86vLb6QkL7iWfXwOr0corsFeIE9L/eKnjuVDE8//rbjsgsThU5M9H5sc3yu0N+9lZZyLTguv/Hr2yB397vqsb9aHJBTe9uoZNGWGoqllqNz7H8N0GpOxNZa99+ni9qm/OHXi+Ic8dcFd+oDgzxSuxUFthtotO6vsRT0Bi+wedYmf2QdrkEUcDB+bxQE7gQkAgyOvdmT+0JA1mbU5qWTuitqs8aaqmL8N56SMSWLQx4961gylyXESBUs3CyVg1FyWmChibVaaJLUg2zdnP0n+8zjUP56SMq98/5kVtqLSSDcHyI+aFCRP2KkMTvVdJMHp+qoiwUQaxYCl5uRP986FdvmKnqoN7odOTKTwLywNolNwpe8XgXwa7QUoN7sQefkOrXhcAJqmlWxbAp4xdL9CfMUvVAj6Nln7LXC2KtHF6DBGu0ojCamdEX8oLU1JVfPw915Ck7coLBRkZyraV5rmx0G30+vwy1Kg5CBVQ0/A0TgXqBgpbIqZa2h2YDjIPBrh8f2AR5kfBQGd3poQxOoO7GJVQ== vmadmin@vm-build"
       network_interfaces: nicansi
       os_type: Linux
       image:
