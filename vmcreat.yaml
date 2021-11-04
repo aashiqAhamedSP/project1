@@ -1,0 +1,49 @@
+---
+- hosts: localhost
+  tasks:
+  - name: Create Network Security Group that allows SSH
+    azure_rm_securitygroup:
+      resource_group: jenkin-rg
+      name: nsgansi
+      rules:
+      - name: SSH
+        protocol: Tcp
+        destination_port_range: 22
+        access: Allow
+        priority: 1001
+        direction: Inbound
+  - name: Create public IP address
+    azure_rm_publicipaddress:
+      resource_group: jenkin-rg
+      allocation_method: Static
+      name: docvmpubip
+    register: output_ip_address
+  - name: Public IP of VM
+    debug:
+      msg: "The public IP is {{ output_ip_address.state.ip_address }}."
+  - name: Create virtual network interface card
+    azure_rm_networkinterface:
+      resource_group: jenkin-rg
+      name: nicansi
+      virtual_network: jenkins-vnet
+      subnet: subnet1
+      public_ip_name: docvmpubip
+      security_group: nsgansi
+  - name: Create a VM with resource group and vnet
+    azure_rm_virtualmachine:
+      resource_group: jenkin-rg
+      name: docvm
+      vm_size: Standard_DS1_v2
+      managed_disk_type: Premium_LRS
+      admin_username: vmadmin
+      ssh_password_enabled: false
+      ssh_public_keys:
+      - path: /home/vmadmin/.ssh/authorized_keys
+        key_data: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOPlC6Vyas4/wlupFh7sZNMV6rLclyrLffTizk+uxa5GxKWejR0RSP4BH5AtwRQUnla/tLoJpY7YRoWYWMcNxW7kf1gtDBvOBbcNvTiBetAPI76TsgXzKFuRDSA+QGzypGRJWj506JUFlCmywnok50imc5RTXDzp7MwJwOSrXdWV+kwGExIWEgTtgkVlkSAfTRe4jWy+D6eJwYyIzK1JHYSRKWmcbpI/PobwJzyz81KhcBKgekSpkEk5hfrNXHmw2N+ohBfZeYBKu7Ie0Q2Gb7hCKcuzFFX2hiu27PxuH6GcYzByeApRB7G2O2vdE3AqZy3kU/lqyzKaTfiC5JLbj9eq3BbFN+EMCkTnsRQMVzkYnz3tm+Aj5NoxTO7NB+LfvChYyrlqEfLkPdY5GsqJprRazBF5G0ILGtBJ+IWAz0n7qJQNqBiyU90eMlZW7MrWKOYmimDtJXqt75xoLpZwSu3jzFoBtkM7A1uomJU7iDF09vJX5wzc9LozhoD4B70pwMZFD9KU+RIvc+gmt0MdFNG5+VUR1e6GU6KZWBx92rfk1a2kVz/djM0btii6pu0lpW6a/PpuCVWdhfa6y+z+Pm2nN3/2km9bv+x5NepriRMxvZFSPNr10i+yd+BXYtHE+L1zBWkYMDLwB5TlZbaM6SMbLiqgznHC+5KDNNhYBSzQ== vmadmin@vm-build"
+      network_interfaces: nicansi
+      os_type: Linux
+      image:
+        offer: UbuntuServer
+        publisher: Canonical
+        sku: 18.04-LTS
+        version: latest
