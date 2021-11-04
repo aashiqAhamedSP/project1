@@ -17,6 +17,7 @@
       virtual_network: jenkins-vnet
       subnet: subnet1
       public_ip_name: docvmpbip
+      security_group: nsg
   - name: Create a VM with resource group and vnet
     azure_rm_virtualmachine:
       resource_group: jenkin-rg
