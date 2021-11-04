@@ -1,6 +1,12 @@
 ---
 - hosts: localhost
   tasks:
+  - name: Add subnet
+    azure_rm_subnet:
+      resource_group: jenkin-rg
+      name: subnet2
+      address_prefix: "10.1.1.0/24"
+      virtual_network: jenkins-vnet
   - name: Create public IP address
     azure_rm_publicipaddress:
       resource_group: jenkin-rg
@@ -10,14 +16,25 @@
   - name: Public IP of VM
     debug:
       msg: "The public IP is {{ output_ip_address.state.ip_address }}."
+  - name: Create Network Security Group that allows SSH
+    azure_rm_securitygroup:
+      resource_group: jenkin-rg
+      name: nsgdoc
+      rules:
+        - name: SSH
+          protocol: Tcp
+          destination_port_range: 22
+          access: Allow
+          priority: 1001
+          direction: Inbound
   - name: Create virtual network interface card
     azure_rm_networkinterface:
       resource_group: jenkin-rg
       name: nicansi
       virtual_network: jenkins-vnet
-      subnet: subnet1
+      subnet: subnet2
       public_ip_name: docvmpbip
-      security_group: nsg
+      security_group: nsgdoc
   - name: Create a VM with resource group and vnet
     azure_rm_virtualmachine:
       resource_group: jenkin-rg
