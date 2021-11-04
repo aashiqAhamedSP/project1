@@ -1,5 +1,5 @@
 ---
-- hosts: remotehosts
+- hosts: remotehost
   become: true
   tasks:
   - name: install docker
