@@ -21,11 +21,11 @@
       resource_group: jenkin-rg
       name: nsgdoc
       rules:
-        - name: SSH
+        - name: all
           protocol: Tcp
-          destination_port_range: 22
+          destination_port_range: "*"
           access: Allow
-          priority: 1001
+          priority: 100
           direction: Inbound
   - name: Create virtual network interface card
     azure_rm_networkinterface:
